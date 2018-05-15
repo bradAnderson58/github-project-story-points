@@ -35,14 +35,15 @@ var resetStoryPointsForColumn = (column) => {
   }
 };
 
-var titleWithPoints = (title, points, spent) => (
-  `<span style="font-weight:bold">${title}</span><br \>
-  <span class="github-project-story-points counter"
-  style="font-size:xx-small">${spent} spent of ${points}</span>`
-);
+var titleWithPoints = (title, points) => (`
+  <span class="github-project-story-points Counter">
+    <span style="display:none">(</span>${points}<span style="display:none">)</span>
+  </span>
+  ${title}
+`);
 
-var titleWithTotalPoints = (title, points, spent) => (
-    `${title}<span class="github-project-story-points" style="font-size:xx-small"> item${pluralize(title)} (${spent} spent of ${points})</span>`
+var titleWithTotalPoints = (title, points) => (
+    `${title}<span class="github-project-story-points" style="font-size:xx-small"> item${pluralize(title)} (${points} points)</span>`
 );
 
 var addStoryPointsForColumn = (column) => {
@@ -51,7 +52,7 @@ var addStoryPointsForColumn = (column) => {
     .filter(card => !card.classList.contains('sortable-ghost'))
     .map(card => {
       const titleElementContainer = Array
-        .from(card.getElementsByTagName('h5'))
+        .from(card.getElementsByClassName('h5'))
         .concat(Array.from(card.getElementsByTagName('p')))[0];
       const titleElementLink = (
         titleElementContainer.getElementsByTagName &&
@@ -89,12 +90,12 @@ var addStoryPointsForColumn = (column) => {
     columnSpentPoints += card.spentPoints;
     if (card.storyPoints || card.spentPoints) {
       card.titleElement.dataset.gpspOriginalContent = card.title;
-      card.titleElement.innerHTML = titleWithPoints(card.titleNoPoints, card.storyPoints, card.spentPoints);
+      card.titleElement.innerHTML = titleWithPoints(card.titleNoPoints, card.storyPoints);
     }
   }
   // Apply DOM changes:
-  if (columnStoryPoints || columnSpentPoints) {
-    columnCountElement.innerHTML = titleWithTotalPoints(columnCards.length, columnStoryPoints, columnSpentPoints);
+  if (columnStoryPoints) {
+    columnCountElement.innerHTML = titleWithTotalPoints(columnCards.length, columnStoryPoints);
   }
 };
 
@@ -134,11 +135,11 @@ var start = debounce(() => {
       pointsRegEx.exec(titleElement.innerText) ||
       [null, '0', titleElement.innerText]
     );
-    const storyPoints = parseFloat(story[2]) || 0;
-    const storyTitle = story[3];
-    const spentPoints = parseFloat(story[5]) || 0;
-    if (storyPoints || spentPoints) {
-      titleElement.innerHTML = titleWithPoints(storyTitle, storyPoints, spentPoints);
+
+    const storyPoints = parseFloat(story[1]);
+    const storyTitle = story[2];
+    if (storyPoints) {
+      titleElement.innerHTML = titleWithPoints(storyTitle, storyPoints);
     }
   }
 }, 50);
