@@ -32,7 +32,7 @@ var resetStoryPointsForColumn = (column) => {
 };
 
 var titleWithPoints = (title, points) => (`
-  <span class="github-project-story-points counter">
+  <span class="github-project-story-points Counter">
     <span style="display:none">(</span>${points}<span style="display:none">)</span>
   </span>
   ${title}
@@ -48,7 +48,7 @@ var addStoryPointsForColumn = (column) => {
     .filter(card => !card.classList.contains('sortable-ghost'))
     .map(card => {
       const titleElementContainer = Array
-        .from(card.getElementsByTagName('h5'))
+        .from(card.getElementsByClassName('h5'))
         .concat(Array.from(card.getElementsByTagName('p')))[0];
       const titleElementLink = (
         titleElementContainer.getElementsByTagName &&
@@ -86,7 +86,10 @@ var addStoryPointsForColumn = (column) => {
   for (let card of columnCards) {
     if (card.storyPoints) {
       card.titleElement.dataset.gpspOriginalContent = card.title;
+
       card.titleElement.innerHTML = titleWithPoints(card.titleNoPoints, card.storyPoints);
+
+      console.log(card.titleElement.innerHTML);
     }
   }
 };
@@ -130,6 +133,7 @@ var start = debounce(() => {
     const storyPoints = parseFloat(story[1]);
     const storyTitle = story[2];
     if (storyPoints) {
+      console.log(storyTitle, storyPoints);
       titleElement.innerHTML = titleWithPoints(storyTitle, storyPoints);
     }
   }
